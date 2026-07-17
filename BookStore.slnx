@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BookStore.Application/BookStore.Application.csproj" />
+    <Project Path="src/BookStore.Domain/BookStore.Domain.csproj" />
+    <Project Path="src/BookStore.Infrastructure/BookStore.Infrastructure.csproj" />
+    <Project Path="src/BookStore.WebApi/BookStore.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="BookStore.Application.Test/BookStore.Application.Test.csproj" Id="9eddfc1c-ba5e-4204-b027-d39e3e5c5257" />
+    <Project Path="BookStore.Domain.Test/BookStore.Domain.Test.csproj" Id="b717206f-0653-4f77-9068-6c4ea3b798c9" />
+    <Project Path="BookStore.Infrastructure.Test/BookStore.WebApi.IntegrationTests.csproj" Id="c67225be-2673-4c70-bace-2f18b1dde3a0" />
+  </Folder>
+</Solution>
