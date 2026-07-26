@@ -1,4 +1,4 @@
-﻿using BookStore.Domain.Common;
+﻿using BookStore.Domain.Common.Primitives;
 
 namespace BookStore.Domain.Users.Exceptions
 {

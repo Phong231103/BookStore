@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="BookStore.SharedKernel/BookStore.SharedKernel.csproj" Id="9de21800-b3a8-4efb-a5b7-982e29265f3c" />
+    <Project Path="BookStore.SharedKernel/BookStore.SharedKernel.csproj" Id="9de21800-b3a8-4efb-a5b7-982e29265f3c">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
     <Project Path="src/BookStore.Application/BookStore.Application.csproj" />
     <Project Path="src/BookStore.Domain/BookStore.Domain.csproj" />
     <Project Path="src/BookStore.Infrastructure/BookStore.Infrastructure.csproj" />

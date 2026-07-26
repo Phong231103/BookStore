@@ -1,7 +1,7 @@
 ﻿using BookStore.Domain.Users.Enums;
 using BookStore.Domain.Users.ValueObjects;
 
-namespace BookStore.Domain.Users.User
+namespace BookStore.Domain.Users
 {
     public sealed partial class User : AggregateRoot<UserId>
     {

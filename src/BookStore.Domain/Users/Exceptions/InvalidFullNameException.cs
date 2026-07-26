@@ -1,4 +1,4 @@
-using BookStore.Domain.Common;
+using BookStore.Domain.Common.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
