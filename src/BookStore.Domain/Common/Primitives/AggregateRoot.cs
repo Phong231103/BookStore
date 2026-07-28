@@ -3,11 +3,11 @@
 namespace BookStore.Domain.Common.Primitives;
 
 /// <summary>
-/// Represents the base class for all Aggregate Roots.
-/// Aggregate Roots are responsible for recording domain events
-/// that occur during the execution of business rules.
+/// Represents the base class for all aggregate roots.
 /// </summary>
-public abstract class AggregateRoot<TId> : Entity<TId>
+public abstract class AggregateRoot<TId>
+    : Entity<TId>,
+      IHasDomainEvents
     where TId : notnull
 {
     private readonly List<IDomainEvent> _domainEvents = [];
@@ -21,10 +21,8 @@ public abstract class AggregateRoot<TId> : Entity<TId>
     {
     }
 
-    /// <summary>
-    /// Gets the domain events raised by this aggregate.
-    /// </summary>
-    public IReadOnlyCollection<IDomainEvent> DomainEvents
+    /// <inheritdoc />
+    public IReadOnlyList<IDomainEvent> DomainEvents
         => _domainEvents.AsReadOnly();
 
     /// <summary>
@@ -37,10 +35,7 @@ public abstract class AggregateRoot<TId> : Entity<TId>
         _domainEvents.Add(domainEvent);
     }
 
-    /// <summary>
-    /// Removes all recorded domain events.
-    /// Called after events have been successfully dispatched.
-    /// </summary>
+    /// <inheritdoc />
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();

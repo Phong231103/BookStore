@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BookStore.Domain.Common.Services;
 
-namespace BookStore.Domain.Common.Services
+/// <summary>
+/// Provides the current UTC time.
+/// </summary>
+public interface ISystemClock
 {
-    internal interface ISystemClock
-    {
-    }
+    DateTime UtcNow { get; }
 }
