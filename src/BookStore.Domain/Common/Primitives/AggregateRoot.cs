@@ -1,4 +1,5 @@
-﻿using BookStore.Domain.Common.Intefaces;
+﻿using BookStore.Domain.Common.Identifiers;
+using BookStore.Domain.Common.Intefaces;
 
 namespace BookStore.Domain.Common.Primitives;
 
@@ -8,7 +9,7 @@ namespace BookStore.Domain.Common.Primitives;
 public abstract class AggregateRoot<TId>
     : Entity<TId>,
       IHasDomainEvents
-    where TId : notnull
+    where TId : StronglyTypedId
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 

@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Users\User.Authentication.cs" />
+    <Compile Remove="Users\User.Role.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Users\Events\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Users\User.Role.cs" />
   </ItemGroup>
 
 </Project>

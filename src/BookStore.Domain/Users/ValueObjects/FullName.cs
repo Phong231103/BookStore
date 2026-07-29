@@ -1,4 +1,5 @@
-﻿using BookStore.Domain.Users.Exceptions;
+﻿using BookStore.Domain.Common.Primitives;
+using BookStore.Domain.Users.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace BookStore.Domain.Users.ValueObjects
@@ -17,13 +18,13 @@ namespace BookStore.Domain.Users.ValueObjects
         public static FullName Create(string fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
-                throw new InvalidFullNameException(fullName);
+                throw new InvalidFullNameException();
 
             // Loại bỏ khoảng trắng thừa
             var normalized = Normalize(fullName);
 
             if (normalized.Length > MaxLength)
-                throw new InvalidFullNameException(fullName);
+                throw new InvalidFullNameException();
 
             return new FullName(normalized);
         }
@@ -33,15 +34,12 @@ namespace BookStore.Domain.Users.ValueObjects
             return Regex.Replace(value.Trim(), @"\s+", " ");
         }
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return Value;
         }
 
         public override string ToString()
             => Value;
-
-        public static implicit operator string(FullName fullName)
-            => fullName.Value;
     }
 }

@@ -1,4 +1,5 @@
-﻿using BookStore.Domain.Users.Exceptions;
+﻿using BookStore.Domain.Common.Primitives;
+using BookStore.Domain.Users.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace BookStore.Domain.Users.ValueObjects
@@ -18,14 +19,26 @@ namespace BookStore.Domain.Users.ValueObjects
         public static PhoneNumber Create(string phoneNumber)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
-                throw new InvalidPhoneNumberException(phoneNumber);
+                throw new InvalidPhoneNumberException();
 
-            var normalized = phoneNumber.Trim();
+            var normalized = Normalize(phoneNumber);
 
             if (!PhoneRegex.IsMatch(normalized))
-                throw new InvalidPhoneNumberException(phoneNumber);
+                throw new InvalidPhoneNumberException();
 
             return new PhoneNumber(normalized);
+        }
+
+        private static string Normalize(string value)
+        {
+            value = value.Trim();
+
+            value = value.Replace(" ", "")
+                         .Replace("-", "")
+                         .Replace("(", "")
+                         .Replace(")", "");
+
+            return value;
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

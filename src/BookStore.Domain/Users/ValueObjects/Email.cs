@@ -1,14 +1,12 @@
-﻿using BookStore.Domain.Users.Exceptions;
+﻿using BookStore.Domain.Common.Primitives;
+using BookStore.Domain.Users.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace BookStore.Domain.Users.ValueObjects
 {
     public sealed class Email : ValueObject
     {
-        private static readonly Regex EmailRegex =
-            new(
-                @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public string Value { get; }
 
@@ -19,18 +17,22 @@ namespace BookStore.Domain.Users.ValueObjects
 
         public static Email Create(string email)
         {
-            if (string.IsNullOrWhiteSpace(email))
-                throw new InvalidEmailException(email);
+            ArgumentException.ThrowIfNullOrWhiteSpace(email);
 
-            var normalized = email.Trim().ToLowerInvariant();
+            var normalized = Normalize(email);
 
             if (!EmailRegex.IsMatch(normalized))
-                throw new InvalidEmailException(email);
+                throw new InvalidEmailException();
 
             return new Email(normalized);
         }
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        private static string Normalize(string email)
+        {
+            return email.Trim().ToLowerInvariant();
+        }
+
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return Value;
         }

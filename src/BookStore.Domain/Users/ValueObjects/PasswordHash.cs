@@ -1,4 +1,5 @@
-﻿using BookStore.Domain.Users.Exceptions;
+﻿using BookStore.Domain.Common.Primitives;
+using BookStore.Domain.Users.Exceptions;
 
 namespace BookStore.Domain.Users.ValueObjects
 {
@@ -19,7 +20,7 @@ namespace BookStore.Domain.Users.ValueObjects
             return new PasswordHash(hash);
         }
 
-        protected override IEnumerable<object> GetEqualityComponents()
+        protected override IEnumerable<object?> GetEqualityComponents()
         {
             yield return Value;
         }
