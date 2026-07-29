@@ -99,16 +99,13 @@ namespace BookStore.Domain.Users
                 phoneNumber,
                 createdAt);
 
-            user.AddRole(
-                UserRole.Create(
-                    defaultRoleId,
-                    createdAt));
+            user.AddRole(UserRole.Create(defaultRoleId, createdAt));
 
             user.RaiseRegisteredEvent();
 
             return user;
         }
-
+        #region State Helpers
         private void Touch(DateTime utcNow)
         {
             UpdatedOnUtc = utcNow;
@@ -134,10 +131,27 @@ namespace BookStore.Domain.Users
             _roles.Remove(role);
         }
 
+        private void ResetFailedLoginState()
+        {
+            FailedLoginAttempts = 0;
+            LockoutEndUtc = null;
+        }
+
+        private void LockUntil(DateTime utcTime)
+        {
+            LockoutEndUtc = utcTime;
+        }
+
+        #endregion
+
+        #region Domain Event Helpers
         private void RaiseRegisteredEvent()
         {
             AddDomainEvent(
                 new UserRegisteredDomainEvent(Id));
         }
+
+
+        #endregion
     }
 }

@@ -1,58 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BookStore.Domain.Users.ChildEntity;
+using BookStore.Domain.Users.Exceptions;
+using BookStore.Domain.Users.Identifiers;
 
 namespace BookStore.Domain.Users
 {
-	public sealed partial class User
-	{
-		/// <summary>
-		/// Assigns a role to the user.
-		/// </summary>
-		public void AssignRole(
-			RoleId roleId,
-			DateTime assignedAtUtc)
-		{
-			ArgumentNullException.ThrowIfNull(roleId);
+    public sealed partial class User
+    {
+        /// <summary>
+        /// Assigns a role to the user.
+        /// </summary>
+        public void AssignRole(RoleId roleId, DateTime utcNow)
+        {
+            ArgumentNullException.ThrowIfNull(roleId);
 
-			if (_roles.Any(x => x.RoleId == roleId))
-				throw new DuplicateRoleException();
+            if (HasRole(roleId))
+                throw new DuplicateRoleException();
 
-			_roles.Add(
-				UserRole.Create(
-					roleId,
-					assignedAtUtc));
+            AddRole(UserRole.Create(roleId, utcNow));
 
-			UpdatedOnUtc = assignedAtUtc;
+            Touch(utcNow);
 
-			AddDomainEvent(
-				new RoleAssignedToUserDomainEvent(
-					Id,
-					roleId));
-		}
+            RaiseRoleAssignedEvent(roleId);
+        }
 
-		/// <summary>
-		/// Revokes a role from the user.
-		/// </summary>
-		public void RevokeRole(
-			RoleId roleId,
-			DateTime revokedAtUtc)
-		{
-			ArgumentNullException.ThrowIfNull(roleId);
+        /// <summary>
+        /// Revokes a role from the user.
+        /// </summary>
+        public void RevokeRole(RoleId roleId, DateTime utcNow)
+        {
+            ArgumentNullException.ThrowIfNull(roleId);
 
-			var role = _roles.FirstOrDefault(x => x.RoleId == roleId);
+            var role = FindRole(roleId);
 
-			if (role is null)
-				return;
+            if (role is null)
+                return;
 
-			if (_roles.Count == 1)
-				throw new CannotRemoveLastRoleException();
+            if (_roles.Count == 1)
+                throw new CannotRemoveLastRoleException();
 
-			_roles.Remove(role);
+            RemoveRole(role);
 
-			UpdatedOnUtc = revokedAtUtc;
-		}
-	}
+            Touch(utcNow);
+
+            RaiseRoleRevokedEvent(roleId);
+        }
+    }
 }

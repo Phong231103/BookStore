@@ -12,11 +12,9 @@
 
             EmailConfirmed = true;
 
-            UpdatedOnUtc = confirmedAtUtc;
+            Touch(confirmedAtUtc);
 
-            AddDomainEvent(
-                new UserEmailConfirmedDomainEvent(
-                    Id));
+            AddDomainEvent(new UserEmailConfirmedDomainEvent(Id));
         }
     }
 }
