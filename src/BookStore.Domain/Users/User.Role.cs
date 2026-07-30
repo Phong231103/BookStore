@@ -14,7 +14,7 @@ namespace BookStore.Domain.Users
             ArgumentNullException.ThrowIfNull(roleId);
 
             if (HasRole(roleId))
-                throw new DuplicateRoleException();
+                throw new DuplicateUserRoleException(roleId);
 
             AddRole(UserRole.Create(roleId, utcNow));
 

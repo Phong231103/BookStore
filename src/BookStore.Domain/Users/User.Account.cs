@@ -14,7 +14,7 @@
 
             Touch(confirmedAtUtc);
 
-            AddDomainEvent(new UserEmailConfirmedDomainEvent(Id));
+            RaiseEmailConfirmedEvent();
         }
     }
 }

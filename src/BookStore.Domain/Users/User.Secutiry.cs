@@ -42,24 +42,20 @@ namespace BookStore.Domain.Users
 
         public void EnableTwoFactor(TwoFactorMethod method, DateTime utcNow)
         {
-            if (TwoFactorEnabled)
+            if (IsTwoFactorEnabled)
                 return;
-
-            TwoFactorEnabled = true;
 
             TwoFactorMethod = method;
 
             Touch(utcNow);
 
-            RaiseTwoFactorEnabledEvent();
+            RaiseTwoFactorEnabledEvent(method);
         }
 
         public void DisableTwoFactor(DateTime utcNow)
         {
-            if (!TwoFactorEnabled)
+            if (!IsTwoFactorEnabled)
                 return;
-
-            TwoFactorEnabled = false;
 
             TwoFactorMethod = null;
 

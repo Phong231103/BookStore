@@ -1,6 +1,7 @@
 ﻿using BookStore.Domain.Common.Primitives;
 using BookStore.Domain.Users.ChildEntity;
 using BookStore.Domain.Users.Enums;
+using BookStore.Domain.Users.Events;
 using BookStore.Domain.Users.Identifiers;
 using BookStore.Domain.Users.ValueObjects;
 
@@ -35,7 +36,6 @@ namespace BookStore.Domain.Users
 
             EmailConfirmed = false;
 
-            TwoFactorEnabled = false;
             TwoFactorMethod = null;
 
             FailedLoginAttempts = 0;
@@ -57,9 +57,9 @@ namespace BookStore.Domain.Users
 
         public bool EmailConfirmed { get; private set; }
 
-        public bool TwoFactorEnabled { get; private set; }
-
         public TwoFactorMethod? TwoFactorMethod { get; private set; }
+
+        public bool IsTwoFactorEnabled => TwoFactorMethod is not null;
 
         public int FailedLoginAttempts { get; private set; }
 
@@ -113,12 +113,12 @@ namespace BookStore.Domain.Users
 
         private bool HasRole(RoleId roleId)
         {
-            return _roles.Any(x => x.RoleId == roleId);
+            return Roles.Any(x => x.RoleId == roleId);
         }
 
         private UserRole? FindRole(RoleId roleId)
         {
-            return _roles.FirstOrDefault(x => x.RoleId == roleId);
+            return Roles.FirstOrDefault(x => x.RoleId == roleId);
         }
 
         private void AddRole(UserRole role)
@@ -147,10 +147,53 @@ namespace BookStore.Domain.Users
         #region Domain Event Helpers
         private void RaiseRegisteredEvent()
         {
-            AddDomainEvent(
-                new UserRegisteredDomainEvent(Id));
+            AddDomainEvent(new UserRegisteredDomainEvent(Id, Email));
         }
 
+        private void RaiseEmailConfirmedEvent()
+        {
+            AddDomainEvent(new UserEmailConfirmedDomainEvent(Id));
+        }
+
+        private void RaisePasswordChangedEvent()
+        {
+            AddDomainEvent(new UserPasswordChangedDomainEvent(Id));
+        }
+
+        private void RaiseLockedOutEvent()
+        {
+            AddDomainEvent(new UserLockedOutDomainEvent(Id, LockoutEndUtc ?? DateTime.UtcNow));
+        }
+
+        private void RaiseRoleAssignedEvent(RoleId roleId)
+        {
+            AddDomainEvent(new RoleAssignedToUserDomainEvent(Id, roleId));
+        }
+
+        private void RaiseRoleRevokedEvent(RoleId roleId)
+        {
+            AddDomainEvent(new RoleRevokedFromUserDomainEvent(Id, roleId));
+        }
+
+        private void RaiseTwoFactorEnabledEvent(TwoFactorMethod factorMethod)
+        {
+            AddDomainEvent(new TwoFactorEnabledDomainEvent(Id, factorMethod));
+        }
+
+        private void RaiseTwoFactorDisabledEvent()
+        {
+            AddDomainEvent(new TwoFactorDisabledDomainEvent(Id));
+        }
+
+        private void RaiseUserDeactivatedEvent()
+        {
+            AddDomainEvent(new UserDeactivatedDomainEvent(Id));
+        }
+
+        private void RaiseUserReactivatedEvent()
+        {
+            AddDomainEvent(new UserReactivatedDomainEvent(Id));
+        }
 
         #endregion
     }
