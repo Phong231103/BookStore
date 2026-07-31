@@ -1,9 +1,11 @@
-﻿# BookStore Backend — Knowledge Base
+# BookStore Backend — Knowledge Base
 
-> **Cập nhật lần cuối:** 2026-07-30
+> **Cập nhật lần cuối:** 2026-07-30  
 > **Trạng thái:** Domain Layer hoàn thành 100% · Infrastructure chưa bắt đầu · Application trống
 
 ---
+
+# I. Tổng quan & Thiết kế Kiến trúc (System Design & Principles)
 
 ## 1. Mục tiêu dự án
 
@@ -51,7 +53,7 @@
 
 ---
 
-## 4. Kiến trúc tổng thể
+## 4. Kiến trúc tổng thể & Chiều phụ thuộc
 
 ```
 BookStore.slnx
@@ -71,17 +73,51 @@ Infrastructure → Application → Domain
 
 ---
 
-## 5. Domain Kernel (BookStore.Domain.Common) — ĐÓNG BĂNG
+## 5. Patterns & Conventions chuẩn
 
-### 5.1 Interfaces (Common/Intefaces/)
+### 5.1 Identifiers Pattern
+```csharp
+public sealed class UserId : StronglyTypedId
+{
+    private UserId(Guid value) : base(value) { }
+    public static UserId Create(Guid value) => new(value);
+    public static UserId New() => new(Guid.NewGuid());
+    public static implicit operator Guid(UserId id) => id.Value;
+}
+```
 
+| Id | Dùng ở |
+|---|---|
+| UserId | User Aggregate |
+| RoleId | UserRole, User.Role.cs |
+
+### 5.2 Value Objects Pattern
+```
+private ctor → static Create() → Validate → Normalize → Immutable
+```
+
+| VO | Validation | Normalization |
+|---|---|---|
+| Email | Regex ^[^@\s]+@[^@\s]+\.[^@\s]+$ | Trim().ToLowerInvariant() |
+| FullName | MaxLength = 100 | Trim() + Regex.Replace(@"\s+", " ") |
+| PhoneNumber | Regex ^\+?[0-9]{8,15}$ | Strip space, dash, parens |
+| PasswordHash | NotNullOrWhiteSpace | Không normalize |
+
+---
+
+# II. Trạng thái Đã Thực Hiện & Chi Tiết Các Layer (Implementation Status)
+
+## 1. Domain Layer (Hoàn thành 100%)
+
+### 1.1 Domain Kernel (BookStore.Domain.Common) — ĐÓNG BĂNG
+
+#### Interfaces (Common/Interfaces/)
 | File | Nội dung |
 |---|---|
 | IDomainEvent | Guid EventId, DateTime OccurredOnUtc — không phụ thuộc MediatR |
 | IHasDomainEvents | IReadOnlyList<IDomainEvent> DomainEvents, void ClearDomainEvents() |
 
-### 5.2 Primitives (Common/Primitives/)
-
+#### Primitives (Common/Primitives/)
 | Class | Mô tả | Ghi chú |
 |---|---|---|
 | DomainEvent | Abstract base, tự sinh EventId = Guid.NewGuid(), OccurredOnUtc = DateTime.UtcNow | Implements IDomainEvent |
@@ -90,8 +126,7 @@ Infrastructure → Application → Domain
 | Entity<TId> | where TId : StronglyTypedId, equality theo Id | Không có Domain Events |
 | AggregateRoot<TId> | Kế thừa Entity<TId>, implement IHasDomainEvents | Có AddDomainEvent(), ClearDomainEvents() |
 
-### 5.3 Identifiers (Common/Identifiers/)
-
+#### Identifiers Base (Common/Identifiers/)
 ```csharp
 public abstract class StronglyTypedId
 {
@@ -101,8 +136,7 @@ public abstract class StronglyTypedId
 }
 ```
 
-### 5.4 Domain Services (Common/Services/)
-
+#### Domain Services Contracts (Common/Services/)
 | Interface | Contract |
 |---|---|
 | IPasswordHasher | string Hash(string password), bool Verify(string password, string passwordHash) |
@@ -110,10 +144,9 @@ public abstract class StronglyTypedId
 
 ---
 
-## 6. User Aggregate (BookStore.Domain.Users) — HOÀN THÀNH
+### 1.2 User Aggregate (BookStore.Domain.Users) — HOÀN THÀNH
 
-### 6.1 Cấu trúc folder
-
+#### Cấu trúc folder
 ```
 Users/
 ├── User.cs              ← State, Constructor, Factory, Helpers
@@ -138,10 +171,9 @@ Users/
     └── PhoneNumber.cs
 ```
 
-NOTE: File User.Secutiry.cs có typo (thừa chữ 'u'), thực tế là Security behavior.
+> **NOTE:** File `User.Secutiry.cs` có typo (thừa chữ 'u'), thực tế là Security behavior.
 
-### 6.2 User Properties (State)
-
+#### User Properties (State)
 | Property | Type | Ghi chú |
 |---|---|---|
 | Id | UserId | Từ AggregateRoot<UserId> |
@@ -159,8 +191,7 @@ NOTE: File User.Secutiry.cs có typo (thừa chữ 'u'), thực tế là Securit
 | UpdatedOnUtc | DateTime | Cập nhật qua Touch() |
 | Roles | IReadOnlyCollection<UserRole> | Backing field _roles |
 
-### 6.3 Factory
-
+#### Factory
 ```csharp
 public static User Register(UserId id, Email email, PasswordHash passwordHash,
     FullName fullName, PhoneNumber phoneNumber, RoleId defaultRoleId, DateTime createdAt)
@@ -170,8 +201,7 @@ public static User Register(UserId id, Email email, PasswordHash passwordHash,
 - Tự thêm 1 role mặc định.
 - Raise UserRegisteredDomainEvent.
 
-### 6.4 Business Methods
-
+#### Business Methods
 | Method | File | Invariant |
 |---|---|---|
 | ConfirmEmail(DateTime) | Account | Idempotent — không làm gì nếu đã confirmed |
@@ -185,8 +215,7 @@ public static User Register(UserId id, Email email, PasswordHash passwordHash,
 | Deactivate(DateTime) | Lifecycle | Idempotent |
 | Reactivate(DateTime) | Lifecycle | Idempotent |
 
-### 6.5 Private Helpers
-
+#### Private Helpers
 | Helper | Mục đích |
 |---|---|
 | Touch(DateTime) | Cập nhật UpdatedOnUtc |
@@ -197,16 +226,14 @@ public static User Register(UserId id, Email email, PasswordHash passwordHash,
 | ResetFailedLoginState() | Reset FailedLoginAttempts = 0, LockoutEndUtc = null |
 | LockUntil(DateTime) | Set LockoutEndUtc |
 
-### 6.6 Domain Event Helpers — Quy tắc
-
+#### Domain Event Helpers — Quy tắc
 ```
 Update State → Touch() → Raise Event
 ```
 - Event helper CHỈ gọi AddDomainEvent(...).
 - KHÔNG được sửa state trong event helper.
 
-### 6.7 Invariants (đã chốt)
-
+#### Invariants (Đã chốt)
 - Email unique → Application kiểm tra (không phải Domain)
 - Luôn có ít nhất 1 Role
 - Không có Role trùng
@@ -217,8 +244,7 @@ Update State → Touch() → Raise Event
 
 ---
 
-## 7. UserRole (ChildEntity/UserRole.cs)
-
+### 1.3 Child Entities (UserRole)
 ```csharp
 public sealed class UserRole : Entity<RoleId>
 {
@@ -227,7 +253,6 @@ public sealed class UserRole : Entity<RoleId>
     public static UserRole Create(RoleId roleId, DateTime assignedAt)
 }
 ```
-
 - Association Entity (không phải Aggregate).
 - Không chứa Permission.
 - Không chứa Role Aggregate.
@@ -235,42 +260,7 @@ public sealed class UserRole : Entity<RoleId>
 
 ---
 
-## 8. Identifiers — Pattern chuẩn
-
-```csharp
-public sealed class UserId : StronglyTypedId
-{
-    private UserId(Guid value) : base(value) { }
-    public static UserId Create(Guid value) => new(value);
-    public static UserId New() => new(Guid.NewGuid());
-    public static implicit operator Guid(UserId id) => id.Value;
-}
-```
-
-| Id | Dùng ở |
-|---|---|
-| UserId | User Aggregate |
-| RoleId | UserRole, User.Role.cs |
-
----
-
-## 9. Value Objects — Pattern chuẩn
-
-```
-private ctor → static Create() → Validate → Normalize → Immutable
-```
-
-| VO | Validation | Normalization |
-|---|---|---|
-| Email | Regex ^[^@\s]+@[^@\s]+\.[^@\s]+$ | Trim().ToLowerInvariant() |
-| FullName | MaxLength = 100 | Trim() + Regex.Replace(@"\s+", " ") |
-| PhoneNumber | Regex ^\+?[0-9]{8,15}$ | Strip space, dash, parens |
-| PasswordHash | NotNullOrWhiteSpace | Không normalize |
-
----
-
-## 10. Domain Events (10 events)
-
+### 1.4 Domain Events (10 events)
 | Event | Payload |
 |---|---|
 | UserRegisteredDomainEvent | UserId, Email |
@@ -284,12 +274,11 @@ private ctor → static Create() → Validate → Normalize → Immutable
 | UserDeactivatedDomainEvent | UserId |
 | UserReactivatedDomainEvent | UserId |
 
-Quy tắc: Immutable, chỉ get;, không có logic, không mang dữ liệu nhạy cảm.
+> **Quy tắc:** Immutable, chỉ `get;`, không có logic, không mang dữ liệu nhạy cảm.
 
 ---
 
-## 11. Domain Exceptions (11 exceptions)
-
+### 1.5 Domain Exceptions (11 exceptions)
 | Exception | Ghi chú |
 |---|---|
 | CannotRemoveLastRoleException | Generic message |
@@ -306,8 +295,7 @@ Quy tắc: Immutable, chỉ get;, không có logic, không mang dữ liệu nh�
 
 ---
 
-## 12. Enums
-
+### 1.6 Enums
 ```csharp
 public enum UserStatus { PendingVerification = 0, Active = 1, Locked = 2, Deactivated = 3 }
 public enum TwoFactorMethod { Email = 1, Totp = 2 }
@@ -315,23 +303,20 @@ public enum TwoFactorMethod { Email = 1, Totp = 2 }
 
 ---
 
-## 13. Application Layer — Trạng thái hiện tại
-
+## 2. Application Layer — Trạng thái hiện tại
 - Cấu trúc folder đã tạo nhưng chưa có code.
 - Package đã có: MediatR 12.4.1, FluentValidation.DependencyInjectionExtensions 12.1.1.
 - Folders placeholder (trống): Features/Auth/, Security/Password/, Security/LockOut/, Security/Device/, Security/UserName/
 
 ---
 
-## 14. Infrastructure Layer — Trạng thái hiện tại
-
+## 3. Infrastructure Layer — Trạng thái hiện tại
 - Chưa có code nào, chỉ có .csproj.
 - Package đã cài: EF Core 8 (SqlServer + Design), MassTransit.RabbitMQ 8.2.3, StackExchange.Redis 2.8.0, MailKit, Azure.Storage.Blobs, System.Text.Json
 
 ---
 
-## 15. WebApi Layer — Trạng thái hiện tại
-
+## 4. WebApi Layer — Trạng thái hiện tại
 - Program.cs — skeleton cơ bản (chưa tích hợp DI Application/Infrastructure).
 - Extensions/ServiceExtensions.cs — có ConfigureCors() và ConfigureSerilog().
 - Controllers/ — trống.
@@ -339,7 +324,7 @@ public enum TwoFactorMethod { Email = 1, Totp = 2 }
 
 ---
 
-## 16. Roadmap (đã chốt thứ tự)
+# III. Lộ Trình Phát Triển (Roadmap)
 
 | Phase | Nội dung | Trạng thái |
 |---|---|---|
@@ -353,10 +338,10 @@ public enum TwoFactorMethod { Email = 1, Totp = 2 }
 
 ---
 
-## 17. Ghi chú kỹ thuật quan trọng
+# IV. Ghi Chú Kỹ Thuật & Known Issues
 
-1. **Typo filename:** User.Secutiry.cs (thừa 'u') — lưu ý khi tham chiếu.
-2. **Namespace typo:** BookStore.Domain.Common.Intefaces (thiếu 'r') — đã tồn tại trong code, giữ nguyên để không break build.
-3. **BookStore.SharedKernel** hiện trống — dự phòng sau.
-4. **DomainEvent.OccurredOnUtc** dùng DateTime.UtcNow trong constructor — ngoại lệ chấp nhận được cho event timestamp.
-5. **User.Lifecycle.cs** (Deactivate/Reactivate) hiện KHÔNG raise Domain Event — cần xem lại khi implement Outbox.
+1. **Typo filename:** `User.Secutiry.cs` (thừa 'u') — lưu ý khi tham chiếu.
+2. **Namespace typo:** `BookStore.Domain.Common.Intefaces` (thiếu 'r') — đã tồn tại trong code, giữ nguyên để không break build.
+3. **BookStore.SharedKernel:** Hiện trống — dự phòng sau.
+4. **DomainEvent.OccurredOnUtc:** Dùng DateTime.UtcNow trong constructor — ngoại lệ chấp nhận được cho event timestamp.
+5. **User.Lifecycle.cs:** (`Deactivate`/`Reactivate`) hiện KHÔNG raise Domain Event — cần xem lại khi implement Outbox.
