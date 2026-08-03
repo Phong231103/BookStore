@@ -1,9 +1,13 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".env" />
+    <File Path="docker-compose.yml" />
+  </Folder>
   <Folder Name="/src/">
-    <Project Path="src/BookStore.SharedKernel/BookStore.SharedKernel.csproj" />
     <Project Path="src/BookStore.Application/BookStore.Application.csproj" />
     <Project Path="src/BookStore.Domain/BookStore.Domain.csproj" />
     <Project Path="src/BookStore.Infrastructure/BookStore.Infrastructure.csproj" />
+    <Project Path="src/BookStore.SharedKernel/BookStore.SharedKernel.csproj" />
     <Project Path="src/BookStore.WebApi/BookStore.WebApi.csproj" />
   </Folder>
   <Folder Name="/test/">
