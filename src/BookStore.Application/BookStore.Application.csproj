@@ -1,6 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="Configuration\**" />
+    <Compile Remove="Features\**" />
+    <Compile Remove="Security\**" />
+    <EmbeddedResource Remove="Configuration\**" />
+    <EmbeddedResource Remove="Features\**" />
+    <EmbeddedResource Remove="Security\**" />
+    <None Remove="Configuration\**" />
+    <None Remove="Features\**" />
+    <None Remove="Security\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BookStore.Domain\BookStore.Domain.csproj" />
   </ItemGroup>
 
@@ -10,15 +22,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Auth\" />
-    <Folder Include="Configuration\" />
-    <Folder Include="Security\LockOut\" />
-    <Folder Include="Security\Device\" />
-    <Folder Include="Security\UserName\" />
-    <Folder Include="Security\Password\" />
   </ItemGroup>
 
   <PropertyGroup>

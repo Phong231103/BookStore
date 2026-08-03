@@ -14,9 +14,6 @@ public sealed class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Ap
                 "appsettings.json",
                 optional: false,
                 reloadOnChange: false)
-
-    .AddUserSecrets<Program>(optional: true)
-    .AddEnvironmentVariables()
             .Build();
 
         string connectionString =

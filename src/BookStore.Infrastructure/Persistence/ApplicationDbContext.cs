@@ -1,12 +1,12 @@
-using System.Reflection;
 using BookStore.Application.Common.Interfaces;
 using BookStore.Domain.Users;
 using BookStore.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace BookStore.Infrastructure.Persistence;
 
-public sealed class ApplicationDbContext : DbContext, IApplicationDbContext
+public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

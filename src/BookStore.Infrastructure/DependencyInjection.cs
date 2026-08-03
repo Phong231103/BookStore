@@ -1,5 +1,5 @@
 using BookStore.Application.Common.Interfaces;
-using BookStore.Application.Contracts;
+using BookStore.Application.Users.Interfaces;
 using BookStore.Domain.Common.Services;
 using BookStore.Infrastructure.Common;
 using BookStore.Infrastructure.Persistence;
@@ -30,8 +30,10 @@ public static class DependencyInjection
                    .AddInterceptors(interceptor);
         });
 
-        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddScoped<IUnitOfWork>(
+            sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
         services.AddSingleton<ISystemClock, SystemClock>();
