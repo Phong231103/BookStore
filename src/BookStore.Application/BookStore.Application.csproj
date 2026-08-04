@@ -25,8 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Registration\VerifyRegistration\" />
-    <Folder Include="Registration\StartRegistration\" />
+    <Folder Include="Registrations\VerifyRegistration\" />
     <Folder Include="Users\Commands\" />
   </ItemGroup>
 
