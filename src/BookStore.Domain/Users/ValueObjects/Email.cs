@@ -8,6 +8,7 @@ namespace BookStore.Domain.Users.ValueObjects
     {
         private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        public const int MaxLength = 256;
         public string Value { get; }
 
         private Email(string value)
@@ -18,6 +19,9 @@ namespace BookStore.Domain.Users.ValueObjects
         public static Email Create(string email)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(email);
+
+            if (email.Length > MaxLength)
+                throw new InvalidEmailException();
 
             var normalized = Normalize(email);
 

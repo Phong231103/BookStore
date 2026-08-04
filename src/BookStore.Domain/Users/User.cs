@@ -24,7 +24,7 @@ namespace BookStore.Domain.Users
             PasswordHash passwordHash,
             FullName fullName,
             PhoneNumber phoneNumber,
-            DateTime createdAt)
+            DateTime now)
             : base(id)
         {
             Email = email;
@@ -32,7 +32,7 @@ namespace BookStore.Domain.Users
             FullName = fullName;
             PhoneNumber = phoneNumber;
 
-            Status = UserStatus.Active;
+            Status = UserStatus.PendingVerification;
 
             EmailConfirmed = false;
 
@@ -41,8 +41,8 @@ namespace BookStore.Domain.Users
             FailedLoginAttempts = 0;
             LockoutEndUtc = null;
 
-            CreatedOnUtc = createdAt;
-            UpdatedOnUtc = createdAt;
+            CreatedOnUtc = now;
+            UpdatedOnUtc = now;
         }
 
         public Email Email { get; private set; }
@@ -80,7 +80,7 @@ namespace BookStore.Domain.Users
             Email email,
             PasswordHash passwordHash,
             FullName fullName,
-            PhoneNumber phoneNumber,
+            PhoneNumber? phoneNumber,
             RoleId defaultRoleId,
             DateTime createdAt)
         {

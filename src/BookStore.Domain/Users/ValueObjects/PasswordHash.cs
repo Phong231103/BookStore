@@ -7,6 +7,10 @@ namespace BookStore.Domain.Users.ValueObjects
     {
         public string Value { get; }
 
+        public const int MinLength = 8;
+
+        public const int MaxLength = 32;
+
         private PasswordHash(string value)
         {
             Value = value;
@@ -15,6 +19,9 @@ namespace BookStore.Domain.Users.ValueObjects
         public static PasswordHash Create(string hash)
         {
             if (string.IsNullOrWhiteSpace(hash))
+                throw new InvalidPasswordException();
+
+            if (hash.Length < MinLength || hash.Length > MaxLength)
                 throw new InvalidPasswordException();
 
             return new PasswordHash(hash);

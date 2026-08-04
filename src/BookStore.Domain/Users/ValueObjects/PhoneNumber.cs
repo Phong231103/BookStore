@@ -18,8 +18,8 @@ namespace BookStore.Domain.Users.ValueObjects
 
         public static PhoneNumber Create(string phoneNumber)
         {
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                throw new InvalidPhoneNumberException();
+            //if (string.IsNullOrWhiteSpace(phoneNumber))
+            //    throw new InvalidPhoneNumberException();
 
             var normalized = Normalize(phoneNumber);
 
