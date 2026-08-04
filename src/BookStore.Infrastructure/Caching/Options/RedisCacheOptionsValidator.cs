@@ -21,7 +21,7 @@ internal sealed class RedisCacheOptionsValidator
                 "Redis database must be greater than or equal to zero.");
         }
 
-        if (options.Expirations.Registration <= 0)
+        if (options.RegistrationExpirationMinutes <= 0)
         {
             return ValidateOptionsResult.Fail(
                 "Registration expiration must be greater than zero.");

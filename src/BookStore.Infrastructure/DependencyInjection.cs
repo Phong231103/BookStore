@@ -1,4 +1,5 @@
 using BookStore.Infrastructure.Caching;
+using BookStore.Infrastructure.EmailSetting;
 using BookStore.Infrastructure.Persistence;
 using BookStore.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,8 @@ public static class DependencyInjection
         services
             .AddPersistence(configuration)
             .AddSecurity(configuration)
-            .AddCaching(configuration);
+            .AddCaching(configuration)
+            .AddEmail(configuration); ;
 
         return services;
     }

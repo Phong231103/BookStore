@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace BookStore.Application.Registrations.StartRegistration
 {
-    internal class StartRegistrationCommand
+    public sealed record StartRegistrationCommand
+    : IRequest<StartRegistrationResponse>
     {
+        public required string Email { get; init; }
+
+        public required string Password { get; init; }
+
+        public required string ConfirmPassword { get; init; }
+
+        public required string FullName { get; init; }
+
+        public string? PhoneNumber { get; init; }
     }
 }

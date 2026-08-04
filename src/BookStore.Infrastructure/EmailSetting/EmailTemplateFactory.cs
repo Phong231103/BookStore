@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookStore.Application.Registrations.StartRegistration
+namespace BookStore.Infrastructure.EmailSetting
 {
-    internal class Response
+    internal class EmailTemplateFactory
     {
     }
 }

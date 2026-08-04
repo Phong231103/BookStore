@@ -8,6 +8,6 @@
 
         public int Database { get; init; }
 
-        public required RedisExpirationOptions Expirations { get; init; }
+        public int RegistrationExpirationMinutes { get; init; }
     }
 }

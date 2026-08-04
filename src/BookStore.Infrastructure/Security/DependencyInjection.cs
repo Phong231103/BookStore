@@ -1,5 +1,6 @@
 ﻿using BookStore.Domain.Common.Services;
 using BookStore.Infrastructure.Common;
+using BookStore.Infrastructure.Security.Password;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

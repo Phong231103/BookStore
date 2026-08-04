@@ -1,4 +1,5 @@
 ﻿using BookStore.Application.Registration.Interfaces;
+using BookStore.Application.Registrations.Interfaces;
 using BookStore.Infrastructure.Caching.Options;
 using BookStore.Infrastructure.Caching.Registration;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,8 @@ namespace BookStore.Infrastructure.Caching
             });
 
             services.AddScoped<IPendingRegistrationStore, RedisPendingRegistrationStore>();
+
+            services.AddSingleton<IRegistrationSettings, RegistrationSettings>();
 
             services.AddOptions<RedisCacheOptions>().Bind(configuration.GetSection(RedisCacheOptions.SectionName)).ValidateOnStart();
 

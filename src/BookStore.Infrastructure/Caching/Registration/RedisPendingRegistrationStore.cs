@@ -40,7 +40,7 @@ namespace BookStore.Infrastructure.Caching.Registration
 
             RedisValue value = RedisSerializer.Serialize(registration);
 
-            TimeSpan ttl = TimeSpan.FromMinutes(_options.Expirations.Registration);
+            TimeSpan ttl = TimeSpan.FromMinutes(_options.RegistrationExpirationMinutes);
 
             bool success = await Database.StringSetAsync(key, value, ttl);
 

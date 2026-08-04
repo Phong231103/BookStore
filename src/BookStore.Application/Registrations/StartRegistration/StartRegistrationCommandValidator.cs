@@ -1,12 +1,12 @@
 ﻿using BookStore.Domain.Users.ValueObjects;
 using FluentValidation;
 
-namespace BookStore.Application.Registration;
+namespace BookStore.Application.Registrations.StartRegistration;
 
-public sealed class RegisterUserCommandValidator
-    : AbstractValidator<RegisterUserCommand>
+public sealed class StartRegistrationCommandValidator
+    : AbstractValidator<StartRegistrationCommand>
 {
-    public RegisterUserCommandValidator()
+    public StartRegistrationCommandValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()
@@ -19,8 +19,8 @@ public sealed class RegisterUserCommandValidator
             .MaximumLength(PasswordHash.MaxLength);
 
         RuleFor(x => x.ConfirmPassword)
-            .NotEmpty()
-            .Equal(x => x.Password);
+            .Equal(x => x.Password)
+            .WithMessage("Passwords do not match.");
 
         RuleFor(x => x.FullName)
             .NotEmpty()

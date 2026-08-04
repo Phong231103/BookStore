@@ -1,7 +1,7 @@
 using BookStore.Domain.Common.Services;
 using Microsoft.Extensions.Options;
 
-namespace BookStore.Infrastructure.Security;
+namespace BookStore.Infrastructure.Security.Password;
 
 public sealed class BcryptPasswordHasher : IPasswordHasher
 {

@@ -1,4 +1,4 @@
-namespace BookStore.Infrastructure.Security;
+namespace BookStore.Infrastructure.Security.Password;
 
 public sealed class PasswordHashOptions
 {
