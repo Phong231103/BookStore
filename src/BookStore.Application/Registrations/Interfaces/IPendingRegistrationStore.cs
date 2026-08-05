@@ -1,4 +1,5 @@
 ﻿using BookStore.Application.Registration.Common;
+using BookStore.Domain.Users.ValueObjects;
 
 namespace BookStore.Application.Registration.Interfaces
 {
@@ -9,5 +10,7 @@ namespace BookStore.Application.Registration.Interfaces
         Task<PendingRegistration?> GetAsync(Guid registrationId, CancellationToken cancellationToken);
 
         Task RemoveAsync(Guid registrationId, CancellationToken cancellationToken);
+
+        Task<PendingRegistration?> GetByEmailAsync(Email email, CancellationToken cancellationToken);
     }
 }
